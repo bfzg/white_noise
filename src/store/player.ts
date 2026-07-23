@@ -66,7 +66,7 @@ export const usePlayerStore = defineStore(
 
     /** 切换声音激活状态（开/关） */
     async function toggleSound(id: string) {
-      if (activeSounds.value[id]) {
+      if (Object.prototype.hasOwnProperty.call(activeSounds.value, id)) {
         removeSound(id)
         return
       }
@@ -95,6 +95,10 @@ export const usePlayerStore = defineStore(
         mixer.setVolume(id, defaultVolume)
         if (isPlaying.value) {
           mixer.play(id, path)
+        }
+        else {
+          await playAllActive()
+          isPlaying.value = true
         }
       }
       catch (e: any) {

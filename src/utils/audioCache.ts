@@ -33,7 +33,8 @@ function persist() {
 }
 
 function load() {
-  if (initialized) return
+  if (initialized)
+    return
   try {
     const raw = uni.getStorageSync(STORAGE_KEY)
     if (raw && typeof raw === 'object') {
@@ -62,11 +63,13 @@ function isLocalPath(url: string): boolean {
 
 /** 获取最终可播放的路径：本地文件直接返回，远程文件优先用本地缓存，否则触发下载 */
 export async function getOrDownload(url: string): Promise<string> {
-  if (!url) return ''
+  if (!url)
+    return ''
   load()
 
   // 本地打包文件 & H5 端：直接返回原路径，无需下载
-  if (!isWeixinMp() || isLocalPath(url)) return url
+  if (!isWeixinMp() || isLocalPath(url))
+    return url
 
   // 命中缓存
   const hit = cacheIndex[url]
@@ -74,7 +77,8 @@ export async function getOrDownload(url: string): Promise<string> {
     // 校验文件是否真的还在
     try {
       const info = await getFileInfo(hit.savedFilePath)
-      if (info.size > 0) return hit.savedFilePath
+      if (info.size > 0)
+        return hit.savedFilePath
     }
     catch {
       // 文件失效，删除记录并重新下载
@@ -89,7 +93,8 @@ export async function getOrDownload(url: string): Promise<string> {
       throw new Error(`download failed: ${dl.statusCode}`)
     }
     const saved = await uni.saveFile({ tempFilePath: dl.tempFilePath })
-    if (!saved.savedFilePath) throw new Error('saveFile returned empty path')
+    if (!saved.savedFilePath)
+      throw new Error('saveFile returned empty path')
 
     const info = await getFileInfo(saved.savedFilePath)
     cacheIndex[url] = {
@@ -109,11 +114,18 @@ export async function getOrDownload(url: string): Promise<string> {
 
 function getFileInfo(filePath: string): Promise<{ size: number }> {
   return new Promise((resolve, reject) => {
-    uni.getFileInfo({
+    // #ifdef MP-WEIXIN
+    wx.getFileSystemManager().getFileInfo({
       filePath,
-      success: res => resolve({ size: res.size || 0 }),
+      success: (res) => {
+        resolve({ size: res.size || 0 })
+      },
       fail: err => reject(err),
     })
+    // #endif
+    // #ifndef MP-WEIXIN
+    resolve({ size: 0 })
+    // #endif
   })
 }
 
@@ -134,7 +146,8 @@ export async function clearCache(): Promise<void> {
   load()
   const records = Object.values(cacheIndex)
   await Promise.all(records.map(async (r) => {
-    if (!r.savedFilePath) return
+    if (!r.savedFilePath)
+      return
     try {
       await uni.removeSavedFile({ filePath: r.savedFilePath })
     }
@@ -150,7 +163,8 @@ export async function clearCache(): Promise<void> {
 export async function removeOne(url: string): Promise<void> {
   load()
   const r = cacheIndex[url]
-  if (!r) return
+  if (!r)
+    return
   try {
     await uni.removeSavedFile({ filePath: r.savedFilePath })
   }

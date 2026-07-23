@@ -16,7 +16,7 @@ definePage({
 
       <text class="mb-2 mt-4 block text-base font-semibold text-[#1F2A1E]">一、服务说明</text>
       <text class="mb-3 block text-sm text-[#4A5A48]">
-        哄娃白噪音（以下简称"本应用"）是一款提供白噪音音频播放的工具型小程序。本协议是您与开发者之间就使用本应用所订立的协议。
+        哄睡白噪音（以下简称"本应用"）是一款提供白噪音音频播放的工具型小程序。本协议是您与开发者之间就使用本应用所订立的协议。
       </text>
 
       <text class="mb-2 block text-base font-semibold text-[#1F2A1E]">二、使用规则</text>

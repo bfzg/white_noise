@@ -10,13 +10,17 @@ defineOptions({ name: 'Home' })
 definePage({
   type: 'home',
   style: {
-    navigationBarTitleText: '哄娃白噪音',
+    navigationStyle: 'custom',
     navigationBarTextStyle: 'black',
     navigationBarBackgroundColor: '#FFF8F2',
   },
 })
 
 const player = usePlayerStore()
+const systemInfo = uni.getSystemInfoSync()
+const pageTopStyle = computed(() => ({
+  paddingTop: `${(systemInfo.statusBarHeight || 0)}px`,
+}))
 
 const allSounds = computed<SoundItem[]>(() => {
   return SOUND_DATA.categories.flatMap(cat => cat.sounds)
@@ -130,9 +134,9 @@ onShow(async () => {
   <view class="home min-h-screen flex flex-col" style="background: #FFF8F2;">
     <scroll-view class="flex-1" scroll-y>
       <!-- 顶部标题 -->
-      <view class="px-6 pb-3 pt-8">
-        <text class="block text-3xl font-bold" style="color: #3D3530; font-family: 'PingFang SC', system-ui;">
-          哄娃白噪音
+      <view class="px-6 pb-3" :style="pageTopStyle">
+        <text class="block text-2xl font-bold" style="color: #3D3530; font-family: 'PingFang SC', system-ui;">
+          哄睡白噪音
         </text>
         <text class="mt-1 block text-sm" style="color: #A89A8E;">
           混合你喜欢的声音

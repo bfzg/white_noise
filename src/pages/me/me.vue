@@ -73,11 +73,11 @@ function confirmClearCache() {
 </script>
 
 <template>
-  <view class="min-h-screen pb-safe pt-3" style="background: #FFF8F2;">
+  <view class="min-h-screen pt-3 pb-safe" style="background: #FFF8F2;">
     <!-- 帮助与支持 -->
     <view class="mx-5 mb-6 overflow-hidden rounded-3xl bg-white shadow-sm">
       <view class="flex items-center px-4 py-4 active:opacity-70" @tap="shareToFriend">
-        <view class="mr-3 flex h-10 w-10 items-center justify-center rounded-2xl" style="background: #07c16018;">
+        <view class="mr-3 h-10 w-10 flex items-center justify-center rounded-2xl" style="background: #07c16018;">
           <view class="i-carbon-share h-5 w-5" style="color: #07c160;" />
         </view>
         <text class="flex-1 text-base font-medium" style="color: #4A453E;">分享给好友</text>
@@ -86,7 +86,7 @@ function confirmClearCache() {
       <view class="mx-4 h-px" style="background: #F5F0ED;" />
 
       <view class="flex items-center px-4 py-4 active:opacity-70" @tap="addToDesktop">
-        <view class="mr-3 flex h-10 w-10 items-center justify-center rounded-2xl" style="background: #FFB6C118;">
+        <view class="mr-3 h-10 w-10 flex items-center justify-center rounded-2xl" style="background: #FFB6C118;">
           <view class="i-carbon-screen h-5 w-5" style="color: #FFB6C1;" />
         </view>
         <text class="flex-1 text-base font-medium" style="color: #4A453E;">添加到桌面</text>
@@ -94,21 +94,8 @@ function confirmClearCache() {
       </view>
       <view class="mx-4 h-px" style="background: #F5F0ED;" />
 
-      <view class="flex items-center px-4 py-4">
-        <view class="mr-3 flex h-10 w-10 items-center justify-center rounded-2xl" style="background: #C4DDF018;">
-          <view class="i-carbon-sun h-5 w-5" style="color: #8BB8D0;" />
-        </view>
-        <text class="flex-1 text-base font-medium" style="color: #4A453E;">日/夜间跟随系统</text>
-        <switch
-          :checked="settings.followSystemTheme"
-          color="#07c160"
-          @change="(e: any) => settings.setFollowSystem(!!e.detail.value)"
-        />
-      </view>
-      <view class="mx-4 h-px" style="background: #F5F0ED;" />
-
       <view class="flex items-center px-4 py-4 active:opacity-70" @tap="confirmClearCache">
-        <view class="mr-3 flex h-10 w-10 items-center justify-center rounded-2xl" style="background: #FFE9C218;">
+        <view class="mr-3 h-10 w-10 flex items-center justify-center rounded-2xl" style="background: #FFE9C218;">
           <view class="i-carbon-trash-can h-5 w-5" style="color: #D4A574;" />
         </view>
         <text class="flex-1 text-base font-medium" style="color: #4A453E;">清理音频缓存</text>
@@ -120,7 +107,7 @@ function confirmClearCache() {
     <!-- 版本与版权 -->
     <view class="mt-auto px-5 pb-6 pt-8 text-center">
       <text class="block text-xs font-medium" style="color: #C8BFB8;">v{{ versionLabel }}</text>
-      <text class="mt-1 block text-xs" style="color: #D8D0C8;">2026 哄娃白噪音 · 版权所有</text>
+      <text class="mt-1 block text-xs" style="color: #D8D0C8;">2026 哄睡白噪音 · 版权所有</text>
     </view>
   </view>
 </template>
