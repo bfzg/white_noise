@@ -9,7 +9,7 @@ defineOptions({ name: 'Me' })
 definePage({
   style: {
     navigationBarTitleText: '我的',
-    navigationBarBackgroundColor: '#FFF5F2',
+    navigationBarBackgroundColor: '#FFF8F2',
   },
 })
 
@@ -73,7 +73,7 @@ function confirmClearCache() {
 </script>
 
 <template>
-  <view class="min-h-screen pb-safe pt-3" style="background: #FFF5F2;">
+  <view class="min-h-screen pb-safe pt-3" style="background: #FFF8F2;">
     <!-- 帮助与支持 -->
     <view class="mx-5 mb-6 overflow-hidden rounded-3xl bg-white shadow-sm">
       <view class="flex items-center px-4 py-4 active:opacity-70" @tap="shareToFriend">

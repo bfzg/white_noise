@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "updatedAt": "2026-07-23",
   "categories": [
     {
@@ -7,13 +7,13 @@
       "name": "自然之声",
       "color": "#5BA88C",
       "sounds": [
-        { "id": "rain", "name": "雨声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/rain.mp4", "desc": "淅淅沥沥的雨声，帮助放松入眠", "icon": "i-carbon-rain", "color": "#6BA5C7" },
-        { "id": "thunder", "name": "雷声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/thunder.mp4", "desc": "远处低沉的雷声，营造安全感", "icon": "i-carbon-thunderstorm", "color": "#7B8DBD" },
-        { "id": "waves", "name": "海浪声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/waves.mp4", "desc": "海浪轻拍沙滩的节奏", "icon": "i-carbon-humidity", "color": "#5C9BCE" },
-        { "id": "wind", "name": "风声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/wind.mp4", "desc": "微风穿过树林的沙沙声", "icon": "i-carbon-windy", "color": "#8BAB9E" },
-        { "id": "birds", "name": "鸟鸣", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/birds.mp4", "desc": "清晨清脆的鸟鸣", "icon": "i-carbon-microphone", "color": "#C9A87C" },
-        { "id": "crickets", "name": "蟋蟀声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/crickets.mp4", "desc": "夏夜蟋蟀的低鸣", "icon": "i-carbon-pest", "color": "#9BA864" },
-        { "id": "fire", "name": "篝火声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/fire.mp4", "desc": "篝火噼啪燃烧的温暖声音", "icon": "i-carbon-fire", "color": "#E8945A" }
+        { "id": "rain", "name": "雨声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/rain.mp4", "desc": "淅淅沥沥的雨声，帮助放松入眠", "icon": "i-carbon-rain", "color": "#6BA5C7", "image": "/static/image/cloud-rain-wind.png" },
+        { "id": "thunder", "name": "雷声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/thunder.mp4", "desc": "远处低沉的雷声，营造安全感", "icon": "i-carbon-thunderstorm", "color": "#7B8DBD", "image": "/static/image/cloud-lightning.png" },
+        { "id": "waves", "name": "海浪声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/waves.mp4", "desc": "海浪轻拍沙滩的节奏", "icon": "i-carbon-wave-direction", "color": "#5C9BCE", "image": "/static/image/waves-horizontal.png" },
+        { "id": "wind", "name": "风声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/wind.mp4", "desc": "微风穿过树林的沙沙声", "icon": "i-carbon-windy", "color": "#8BAB9E", "image": "/static/image/wind.png" },
+        { "id": "birds", "name": "鸟鸣", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/birds.mp4", "desc": "清晨清脆的鸟鸣", "icon": "i-carbon-microphone", "color": "#C9A87C", "image": "/static/image/bird.png" },
+        { "id": "crickets", "name": "蟋蟀声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/crickets.mp4", "desc": "夏夜蟋蟀的低鸣", "icon": "i-carbon-pest", "color": "#9BA864", "image": "/static/image/leaf.png" },
+        { "id": "fire", "name": "篝火声", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/fire.mp4", "desc": "篝火噼啪燃烧的温暖声音", "icon": "i-carbon-fire", "color": "#E8945A", "image": "/static/image/flame.png" }
       ]
     },
     {
@@ -21,8 +21,8 @@
       "name": "静心助眠",
       "color": "#9B8EC4",
       "sounds": [
-        { "id": "sbowl", "name": "颂钵", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/sbowl.mp4", "desc": "颂钵空灵悠长的共振声", "icon": "i-carbon-music", "color": "#B8A0D4" },
-        { "id": "whitenoise", "name": "白噪音", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/whitenoise.mp4", "desc": "平稳均匀的白噪音，屏蔽环境干扰", "icon": "i-carbon-radio", "color": "#A0B4C8" }
+        { "id": "sbowl", "name": "颂钵", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/sbowl.mp4", "desc": "颂钵空灵悠长的共振声", "icon": "i-carbon-music", "color": "#B8A0D4", "image": "" },
+        { "id": "whitenoise", "name": "白噪音", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/whitenoise.mp4", "desc": "平稳均匀的白噪音，屏蔽环境干扰", "icon": "i-carbon-radio", "color": "#A0B4C8", "image": "/static/image/tv.png" }
       ]
     },
     {
@@ -30,7 +30,7 @@
       "name": "生活场景",
       "color": "#D4A88C",
       "sounds": [
-        { "id": "people", "name": "咖啡厅", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/people.mp4", "desc": "咖啡厅里人们轻声交谈的背景音", "icon": "i-carbon-cafe", "color": "#C49B7A" }
+        { "id": "people", "name": "咖啡厅", "url": "https://env-00jxu1ytdn0v.normal.cloudstatic.cn/white-noise/people.mp4", "desc": "咖啡厅里人们轻声交谈的背景音", "icon": "i-carbon-cafe", "color": "#C49B7A", "image": "" }
       ]
     }
   ]
