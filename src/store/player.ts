@@ -1,16 +1,15 @@
 /**
  * 播放状态 store
- * - activeSounds: 当前激活的声音集合，每个声音独立音量
+ * - activeSounds: 当前选中的声音（单音频模式，最多一个）
  * - isPlaying: 主控播放状态
  * - timer: 定时关闭（剩余秒数、是否激活）
  */
 
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
-import type { SoundItem } from '@/types/sound'
+import { computed, ref, watch } from 'vue'
 import { findSoundById } from '@/types/sound'
 import * as audioCache from '@/utils/audioCache'
-import * as mixer from '@/utils/audioMixer'
+import * as backgroundAudio from '@/utils/backgroundAudio'
 
 export const TIMER_OPTIONS = [
   { label: '关闭', value: 0 },
@@ -27,11 +26,14 @@ export interface ActiveSound {
   volume: number
 }
 
+const DEFAULT_SOUND_VOLUME = 0.4
+
 export const usePlayerStore = defineStore(
   'player',
   () => {
-    // 激活的声音集合 id -> volume
+    // 当前选中的声音 id -> volume，保留对象结构便于兼容现有页面与持久化数据
     const activeSounds = ref<Record<string, number>>({})
+    const lastSoundPreset = ref<Record<string, number>>({})
     // 主控播放状态
     const isPlaying = ref(false)
     const errorMsg = ref<string>('')
@@ -42,13 +44,14 @@ export const usePlayerStore = defineStore(
     let timerHandle: ReturnType<typeof setInterval> | null = null
 
     const hasSound = computed(() => Object.keys(activeSounds.value).length > 0)
+    const hasLastSoundPreset = computed(() => Object.keys(lastSoundPreset.value).length > 0)
     const activeSoundList = computed<ActiveSound[]>(() => {
-      return Object.entries(activeSounds.value).map(([id, volume]) => ({ id, volume }))
+      return Object.entries(activeSounds.value)
+        .slice(0, 1)
+        .map(([id, volume]) => ({ id, volume: normalizeVolume(volume) }))
     })
-    const activeSoundItems = computed<SoundItem[]>(() => {
-      return activeSoundList.value
-        .map(item => findSoundById(item.id))
-        .filter(Boolean) as SoundItem[]
+    const currentSoundState = computed<ActiveSound | undefined>(() => {
+      return activeSoundList.value[0]
     })
 
     const timerActive = computed(() => timerTotal.value > 0 && timerRemaining.value > 0)
@@ -64,7 +67,20 @@ export const usePlayerStore = defineStore(
       return `${m}:${String(s).padStart(2, '0')}`
     }
 
-    /** 切换声音激活状态（开/关） */
+    function normalizeSingleSound() {
+      const first = Object.entries(activeSounds.value)[0]
+      if (!first)
+        return
+      activeSounds.value = { [first[0]]: normalizeVolume(first[1]) }
+    }
+
+    function normalizeVolume(volume: number) {
+      if (!Number.isFinite(volume) || volume <= 0)
+        return DEFAULT_SOUND_VOLUME
+      return Math.max(0, Math.min(1, volume))
+    }
+
+    /** 切换声音激活状态（单音频模式：同一声音点击关闭，不同声音点击切换并播放） */
     async function toggleSound(id: string) {
       if (Object.prototype.hasOwnProperty.call(activeSounds.value, id)) {
         removeSound(id)
@@ -73,8 +89,8 @@ export const usePlayerStore = defineStore(
       await addSound(id)
     }
 
-    /** 添加一个声音，默认音量 50% */
-    async function addSound(id: string, defaultVolume = 0.5) {
+    /** 添加一个声音，默认音量 40% */
+    async function addSound(id: string, defaultVolume = DEFAULT_SOUND_VOLUME) {
       const sound = findSoundById(id)
       if (!sound) {
         errorMsg.value = '未找到该音源'
@@ -87,114 +103,110 @@ export const usePlayerStore = defineStore(
       }
 
       errorMsg.value = ''
-      activeSounds.value[id] = defaultVolume
+      backgroundAudio.stop()
+      activeSounds.value = { [id]: normalizeVolume(defaultVolume) }
 
       try {
-        const path = await audioCache.getOrDownload(sound.url)
-        mixer.load(id, path)
-        mixer.setVolume(id, defaultVolume)
-        if (isPlaying.value) {
-          mixer.play(id, path)
-        }
-        else {
-          await playAllActive()
-          isPlaying.value = true
-        }
+        await playCurrentSound()
+        isPlaying.value = true
       }
       catch (e: any) {
         errorMsg.value = e?.message || '加载音源失败'
         uni.showToast({ title: errorMsg.value, icon: 'none' })
-        delete activeSounds.value[id]
+        activeSounds.value = {}
       }
     }
 
     /** 移除一个声音 */
     function removeSound(id: string) {
-      mixer.unload(id)
-      const next = { ...activeSounds.value }
-      delete next[id]
-      activeSounds.value = next
-    }
-
-    /** 设置某个声音的音量 */
-    async function setSoundVolume(id: string, volume: number) {
-      const v = Math.max(0, Math.min(1, volume))
-      activeSounds.value[id] = v
-      mixer.setVolume(id, v)
-
-      const sound = findSoundById(id)
-      if (!sound?.url)
-        return
-
-      if (v === 0) {
-        mixer.pause(id)
-      }
-      else if (isPlaying.value) {
-        const path = await audioCache.getOrDownload(sound.url)
-        mixer.play(id, path)
-      }
+      if (backgroundAudio.getCurrentTrackId() === id)
+        backgroundAudio.stop()
+      activeSounds.value = {}
+      isPlaying.value = false
     }
 
     /** 切换主控 播放/暂停 */
     async function toggle() {
       if (!hasSound.value) {
-        uni.showToast({ title: '请先选择至少一个声音', icon: 'none' })
+        uni.showToast({ title: '请先选择一个声音', icon: 'none' })
         return
       }
       if (isPlaying.value) {
-        mixer.pauseAll()
+        backgroundAudio.pause()
         isPlaying.value = false
       }
       else {
-        await playAllActive()
+        await playCurrentSound()
         isPlaying.value = true
       }
     }
 
-    /** 从持久化状态恢复音轨 */
+    /** 从持久化状态恢复当前选择，不自动播放 */
     async function initFromPersist() {
-      const ids = Object.keys(activeSounds.value)
-      if (ids.length === 0)
+      migrateLastMixPreset()
+
+      if (!hasSound.value && hasLastSoundPreset.value) {
+        activeSounds.value = { ...lastSoundPreset.value }
+      }
+      normalizeSingleSound()
+
+      const item = currentSoundState.value
+      if (!item)
         return
-      for (const id of ids) {
-        const sound = findSoundById(id)
-        if (!sound?.url) {
-          delete activeSounds.value[id]
-          continue
-        }
-        try {
-          const path = await audioCache.getOrDownload(sound.url)
-          mixer.load(id, path)
-          mixer.setVolume(id, activeSounds.value[id])
-        }
-        catch (e) {
-          console.error(`[player] init ${id} failed`, e)
-          delete activeSounds.value[id]
-        }
+
+      const sound = findSoundById(item.id)
+      if (!sound?.url) {
+        activeSounds.value = {}
       }
     }
-    async function playAllActive() {
-      for (const id of Object.keys(activeSounds.value)) {
-        const sound = findSoundById(id)
-        if (!sound?.url)
-          continue
-        try {
-          const path = await audioCache.getOrDownload(sound.url)
-          mixer.setVolume(id, activeSounds.value[id])
-          if (activeSounds.value[id] > 0)
-            mixer.play(id, path)
+
+    function migrateLastMixPreset() {
+      if (hasLastSoundPreset.value)
+        return
+
+      try {
+        const raw = uni.getStorageSync('player') as any
+        const oldPreset = raw?.lastMixPreset
+        const first = oldPreset && typeof oldPreset === 'object'
+          ? Object.entries(oldPreset)[0]
+          : undefined
+        if (first) {
+          lastSoundPreset.value = { [first[0]]: normalizeVolume(first[1] as number) }
         }
-        catch (e) {
-          console.error(`playAllActive ${id} failed`, e)
-        }
+      }
+      catch {
+        // Ignore migration failures; activeSounds is still persisted separately.
+      }
+    }
+
+    async function playCurrentSound() {
+      const item = currentSoundState.value
+      if (!item)
+        return
+
+      const sound = findSoundById(item.id)
+      if (!sound?.url)
+        return
+
+      const path = await audioCache.getOrDownload(sound.url)
+      const played = backgroundAudio.play({
+        id: item.id,
+        src: path,
+        title: sound.name,
+        volume: item.volume,
+      })
+      if (!played) {
+        throw new Error('当前环境不支持后台音频播放')
       }
     }
 
     /** 完全停止 */
-    function stop() {
-      mixer.stopAll()
+    function stop(options: { clearSounds?: boolean } = {}) {
+      backgroundAudio.stop()
       isPlaying.value = false
-      activeSounds.value = {}
+      if (options.clearSounds) {
+        activeSounds.value = {}
+      }
       clearTimer()
     }
 
@@ -227,32 +239,42 @@ export const usePlayerStore = defineStore(
       timerRemaining.value = 0
     }
 
-    // 监听底层混音器事件，保持状态同步
-    mixer.subscribe(() => {
-      isPlaying.value = mixer.isAnyPlaying()
+    backgroundAudio.subscribe(() => {
+      isPlaying.value = backgroundAudio.isPlaying()
     })
+
+    watch(
+      activeSounds,
+      (sounds) => {
+        if (Object.keys(sounds).length > 0) {
+          lastSoundPreset.value = { ...sounds }
+        }
+      },
+      { deep: true },
+    )
 
     return {
       // state
       activeSounds,
+      lastSoundPreset,
       isPlaying,
       errorMsg,
       timerTotal,
       timerRemaining,
       // computed
       hasSound,
+      hasLastSoundPreset,
       activeSoundList,
-      activeSoundItems,
+      currentSoundState,
       timerActive,
       timerLabel,
       // actions
       toggleSound,
       addSound,
       removeSound,
-      setSoundVolume,
       toggle,
       initFromPersist,
-      playAllActive,
+      playCurrentSound,
       stop,
       setTimer,
       clearTimer,
@@ -260,7 +282,7 @@ export const usePlayerStore = defineStore(
   },
   {
     persist: {
-      pick: ['activeSounds', 'timerTotal'],
+      pick: ['activeSounds', 'lastSoundPreset', 'timerTotal'],
     },
   },
 )

@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { onShareAppMessage, onShareTimeline, onShow } from '@dcloudio/uni-app'
 import { useSettingsStore } from '@/store/settings'
 import { clearCache, getCacheSize } from '@/utils/audioCache'
 import { formatBytes } from '@/utils/format'
+import { enableWeixinShareMenu, getShareAppMessage, getShareTimeline } from '@/utils/share'
 
 defineOptions({ name: 'Me' })
 definePage({
@@ -23,17 +24,12 @@ function refreshCacheSize() {
 }
 
 onShow(() => {
+  enableWeixinShareMenu()
   refreshCacheSize()
 })
 
-function shareToFriend() {
-  // #ifdef MP-WEIXIN
-  uni.showToast({ title: '点击右上角 · · · 分享', icon: 'none' })
-  // #endif
-  // #ifndef MP-WEIXIN
-  uni.showToast({ title: '仅微信小程序支持', icon: 'none' })
-  // #endif
-}
+onShareAppMessage(() => getShareAppMessage())
+onShareTimeline(() => getShareTimeline())
 
 function addToDesktop() {
   uni.showModal({
@@ -76,13 +72,16 @@ function confirmClearCache() {
   <view class="min-h-screen pt-3 pb-safe" style="background: #FFF8F2;">
     <!-- 帮助与支持 -->
     <view class="mx-5 mb-6 overflow-hidden rounded-3xl bg-white shadow-sm">
-      <view class="flex items-center px-4 py-4 active:opacity-70" @tap="shareToFriend">
+      <button
+        class="share-row flex items-center px-4 py-4 active:opacity-70"
+        open-type="share"
+      >
         <view class="mr-3 h-10 w-10 flex items-center justify-center rounded-2xl" style="background: #07c16018;">
           <view class="i-carbon-share h-5 w-5" style="color: #07c160;" />
         </view>
         <text class="flex-1 text-base font-medium" style="color: #4A453E;">分享给好友</text>
         <view class="i-carbon-chevron-right h-4 w-4" style="color: #C8BFB8;" />
-      </view>
+      </button>
       <view class="mx-4 h-px" style="background: #F5F0ED;" />
 
       <view class="flex items-center px-4 py-4 active:opacity-70" @tap="addToDesktop">
@@ -111,3 +110,17 @@ function confirmClearCache() {
     </view>
   </view>
 </template>
+
+<style scoped>
+.share-row {
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+  line-height: normal;
+  text-align: left;
+}
+
+.share-row::after {
+  border: 0;
+}
+</style>

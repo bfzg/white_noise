@@ -21,7 +21,7 @@ definePage({
     <view class="mb-4 rounded-2xl bg-white p-5">
       <text class="mb-2 block text-base text-[#1F2A1E] font-semibold">产品介绍</text>
       <text class="text-sm text-[#4A5A48] leading-7">
-        哄睡白噪音是一款专为新生儿家庭设计的哄睡小程序，收录了安抚初生、自然万象、精选混音三大类共 18 种白噪音音源，帮助宝宝在熟悉的声环境中安心入睡。
+        哄睡白噪音是一款专为新生儿家庭设计的哄睡小程序，收录了安抚初生、自然万象、生活场景等多种白噪音音源，帮助宝宝在熟悉的声环境中安心入睡。
       </text>
     </view>
 

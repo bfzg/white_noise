@@ -25,6 +25,7 @@ export default defineConfig({
         'vertical-align': 'middle',
       },
       collections: {
+        'boxicons': () => import('@iconify-json/boxicons').then(i => i.icons),
         // 注册本地 SVG 图标集合, 从本地文件系统加载图标
         // 在 './src/static/my-icons' 目录下的所有 svg 文件将被注册为图标，
         // my-icons 是图标集合名称，使用 `i-my-icons-图标名` 调用
@@ -79,6 +80,22 @@ export default defineConfig({
     'i-carbon-user',
     'i-carbon-ibm-watson-language-translator',
     'i-carbon-menu',
+    'i-boxicons-home-alt',
+    'i-boxicons-trees',
+    'i-boxicons-user-voice',
+    'i-boxicons-cloud-moon',
+    'i-boxicons-wind',
+    'i-boxicons-fire',
+    'i-boxicons-cloud-rain-wind',
+    'i-boxicons-thunder',
+    'i-boxicons-tv',
+    'i-boxicons-bird',
+    'i-boxicons-barn',
+    'i-lucide-lab-shower',
+    'i-lucide-lab-wave-circle',
+    'i-lucide-lab-frog-face',
+    'i-lucide-lab-bowl-overflow',
+    'i-lucide-lab-coffeemaker',
   ],
   rules: [
     [
